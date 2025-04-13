@@ -1,3 +1,9 @@
+
+
+=======
+App still on development
+>>>>>>> 118f055b82567e698f5892e1ca8eb0a0e393c5f1
+
 ```markdown
 # Fake News Detection Project
 
@@ -32,14 +38,15 @@ fake_news_detection/
 ├── App/
 │   └── templates/
 │       └── index.html       # Front-end HTML template for the Flask app
+│   └── app.py               # Flask App
+│   └── test.txt
 ├── Data/
+│   └── Data-set/            # Test data
+│       └── test.csv  
 │   └── Dataset/
 │       └── data.csv         # CSV dataset containing news texts and labels
 ├── Models/
-│   ├── random_forest.pkl    # Saved RandomForest model
-│   ├── tfidf_vectorizer.pkl # Saved TF-IDF vectorizer
-│   ├── xgboost_model.pkl    # Saved XGBoost model
-│   └── deep_model.h5        # Saved deep learning model (TensorFlow/Keras)
+│   ├── model.pkl    # Saved model
 ├── notebooks/
 │   └── Fakenewsdetection.ipynb  # Jupyter Notebook for experiments and visualizations
 ├── Main.py                  # Main training script that builds and evaluates pipelines
@@ -151,7 +158,3 @@ fake_news_detection/
 
 ---
 
-
-=======
-App still on development
->>>>>>> 118f055b82567e698f5892e1ca8eb0a0e393c5f1
