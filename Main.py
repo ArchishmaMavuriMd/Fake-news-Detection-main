@@ -6,7 +6,7 @@ from sklearn.metrics import accuracy_score, confusion_matrix, classification_rep
 import joblib
 
 # Load the dataset
-data = pd.read_csv('data/data1.csv')
+data = pd.read_csv('Data/Dataset/data1.csv')
 
 # Preprocessing (tokenization, stopword removal)
 X = data['text']
@@ -31,5 +31,5 @@ print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
 print("Classification Report:\n", classification_report(y_test, y_pred))
 
 # Save the trained model and vectorizer
-joblib.dump(model, 'models/model.pkl')
+joblib.dump(model, 'Models/model.pkl')
 
