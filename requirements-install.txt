@@ -1,0 +1,16 @@
+pandas
+numpy
+re
+nltk
+spacy
+gensim
+scikit-learn
+xgboost
+tensorflow
+pytorch
+transformers
+flask 
+streamlit 
+matplotlib
+seaborn
+joblib
