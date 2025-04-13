@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-
-
-
 ```markdown
 # Fake News Detection Project
 
