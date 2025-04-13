@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 
 
@@ -157,3 +158,6 @@ fake_news_detection/
 ---
 
 
+=======
+App still on development
+>>>>>>> 118f055b82567e698f5892e1ca8eb0a0e393c5f1

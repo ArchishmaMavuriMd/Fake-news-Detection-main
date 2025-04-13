@@ -15,10 +15,15 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.ensemble import RandomForestClassifier
 import xgboost as xgb
 
+<<<<<<< HEAD
 # --- Deep Learning Libraries ---
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout
+=======
+# Load the dataset
+data = pd.read_csv('Data/Dataset/data1.csv')
+>>>>>>> 118f055b82567e698f5892e1ca8eb0a0e393c5f1
 
 # --- NLP Libraries ---
 # NLTK for tokenization and stopwords
@@ -148,9 +153,14 @@ print("Random Forest Accuracy:", accuracy_score(y_test, y_pred_rf))
 print("Random Forest Confusion Matrix:\n", confusion_matrix(y_test, y_pred_rf))
 print("Random Forest Classification Report:\n", classification_report(y_test, y_pred_rf))
 
+<<<<<<< HEAD
 # Save the RandomForest model and TF-IDF vectorizer
 joblib.dump(model_rf, os.path.join("Models", "random_forest.pkl"))
 joblib.dump(vectorizer, os.path.join("Models", "tfidf_vectorizer.pkl"))
+=======
+# Save the trained model and vectorizer
+joblib.dump(model, 'Models/model.pkl')
+>>>>>>> 118f055b82567e698f5892e1ca8eb0a0e393c5f1
 
 # ---------------------------------------------
 # Pipeline 2: TF-IDF + XGBoost Classifier
