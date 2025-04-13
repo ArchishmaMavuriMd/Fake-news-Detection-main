@@ -28,7 +28,6 @@ The project features the following key elements:
 
 ## Project Structure
 
-```
 fake_news_detection/
 ├── App/
 │   └── templates/
@@ -49,7 +48,6 @@ fake_news_detection/
 ├── README.md                # This file
 ├── requirements.txt         # Detailed list of required Python libraries and versions
 └── requirements-install.txt # Alternative/simplified installation requirements
-```
 
 ## File Descriptions
 
