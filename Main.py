@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+import nltk
+# Download necessary NLTK resources
+nltk.download('punkt')
+nltk.download('stopwords')
+nltk.download('punkt_tab')
+
 import os
 import re
 import string
@@ -14,22 +20,11 @@ from sklearn.metrics import accuracy_score, confusion_matrix, classification_rep
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.ensemble import RandomForestClassifier
 import xgboost as xgb
-
-<<<<<<< HEAD
-# --- Deep Learning Libraries ---
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout
-=======
-# Load the dataset
-data = pd.read_csv('Data/Dataset/data1.csv')
->>>>>>> 118f055b82567e698f5892e1ca8eb0a0e393c5f1
 
 # --- NLP Libraries ---
-# NLTK for tokenization and stopwords
-import nltk
-nltk.download('punkt')
-nltk.download('stopwords')
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 
@@ -56,6 +51,10 @@ def preprocess_text(text):
       - Lemmatizing tokens using spaCy
     Returns the cleaned text.
     """
+    # Ensure the text is a string; if not, return an empty string
+    if pd.isnull(text) or not isinstance(text, str):
+        return ""
+    
     # Basic cleaning
     text = text.lower()
     text = re.sub(r'\[.*?\]', '', text)
@@ -122,12 +121,21 @@ def get_bert_embeddings(texts, max_length=128):
 # ---------------------------------------------
 # Load Dataset
 # ---------------------------------------------
-# Update the path to reflect the project structure
-data_path = os.path.join("Data", "Dataset", "data.csv")
+data_path = os.path.join("Data", "Data-set", "train.csv")
 data = pd.read_csv(data_path)
+print("Dataset columns:", data.columns)
+print("First few rows:\n", data.head())
 
-# Assure that 'text' and 'label' columns exist
+# Ensure that 'text' and 'label' columns exist
+if 'text' not in data.columns:
+    raise KeyError("Column 'text' not found in dataset")
+if 'label' not in data.columns:
+    raise KeyError("Column 'label' not found in dataset")
+
+# Preprocess the text column
+print("Preprocessing text data...")
 data['text_clean'] = data['text'].apply(preprocess_text)
+print("Preprocessing complete.")
 
 # ---------------------------------------------
 # Define Features and Labels
@@ -141,6 +149,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 # ---------------------------------------------
 # Pipeline 1: TF-IDF + RandomForest Classifier
 # ---------------------------------------------
+print("Extracting TF-IDF features and training RandomForest...")
 vectorizer = TfidfVectorizer(stop_words='english')
 X_train_tfidf = vectorizer.fit_transform(X_train)
 X_test_tfidf = vectorizer.transform(X_test)
@@ -153,18 +162,16 @@ print("Random Forest Accuracy:", accuracy_score(y_test, y_pred_rf))
 print("Random Forest Confusion Matrix:\n", confusion_matrix(y_test, y_pred_rf))
 print("Random Forest Classification Report:\n", classification_report(y_test, y_pred_rf))
 
-<<<<<<< HEAD
 # Save the RandomForest model and TF-IDF vectorizer
+if not os.path.exists("Models"):
+    os.makedirs("Models")
 joblib.dump(model_rf, os.path.join("Models", "random_forest.pkl"))
 joblib.dump(vectorizer, os.path.join("Models", "tfidf_vectorizer.pkl"))
-=======
-# Save the trained model and vectorizer
-joblib.dump(model, 'Models/model.pkl')
->>>>>>> 118f055b82567e698f5892e1ca8eb0a0e393c5f1
 
 # ---------------------------------------------
 # Pipeline 2: TF-IDF + XGBoost Classifier
 # ---------------------------------------------
+print("Training XGBoost Classifier...")
 model_xgb = xgb.XGBClassifier(use_label_encoder=False, eval_metric='logloss', random_state=42)
 model_xgb.fit(X_train_tfidf, y_train)
 
@@ -173,24 +180,24 @@ print("XGBoost Accuracy:", accuracy_score(y_test, y_pred_xgb))
 print("XGBoost Confusion Matrix:\n", confusion_matrix(y_test, y_pred_xgb))
 print("XGBoost Classification Report:\n", classification_report(y_test, y_pred_xgb))
 
-# Save the XGBoost model
 joblib.dump(model_xgb, os.path.join("Models", "xgboost_model.pkl"))
 
 # ---------------------------------------------
 # Pipeline 3: Deep Learning using BERT Embeddings
 # ---------------------------------------------
-# Extract BERT embeddings for the training and testing data
+print("Extracting BERT embeddings for training data...")
 X_train_bert = get_bert_embeddings(X_train)
+print("Extracting BERT embeddings for testing data...")
 X_test_bert = get_bert_embeddings(X_test)
 
-# Define a simple neural network for binary classification
+print("Training deep learning model using BERT embeddings...")
 input_dim = X_train_bert.shape[1]  # Typically 768 for distilBERT
 model_deep = Sequential([
     Dense(128, activation='relu', input_shape=(input_dim,)),
     Dropout(0.2),
     Dense(64, activation='relu'),
     Dropout(0.2),
-    Dense(1, activation='sigmoid')  # Change to softmax if doing multi-class classification
+    Dense(1, activation='sigmoid')  # For binary classification
 ])
 model_deep.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
@@ -207,7 +214,7 @@ model_deep.save(os.path.join("Models", "deep_model.h5"))
 # ---------------------------------------------
 # (Optional) Word2Vec Experiment (not used in main pipelines)
 # ---------------------------------------------
-# Uncomment the following lines to train and test a Word2Vec model on your data.
+# Uncomment these lines if you want to experiment with Word2Vec.
 # w2v_model = train_word2vec(data['text_clean'])
 # sample_text = X_test.iloc[0]
 # avg_embedding = get_average_w2v(sample_text, w2v_model)

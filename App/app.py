@@ -4,21 +4,33 @@ import re
 import string
 import pandas as pd
 import os
+import nltk
+import spacy
+from sklearn.feature_extraction.text import TfidfVectorizer
+from transformers import BertTokenizer, TFBertModel
 
+# Initialize Flask app
 app = Flask(__name__)
 
-# Correct the path to the model file
+# Load the spaCy model for lemmatization
+nlp = spacy.load('en_core_web_sm')
+
+# Load the necessary models and vectorizers
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
-model_path = os.path.join(parent_dir, "Model.pkl")
-print(f"Corrected model path: {model_path}")
+model_path_rf = os.path.join(parent_dir, "Models/random_forest.pkl")
+model_path_xgb = os.path.join(parent_dir, "Models/xgboost_model.pkl")
+vectorizer_path = os.path.join(parent_dir, "Models/tfidf_vectorizer.pkl")
 
-# Load the model
-Model = joblib.load(model_path)
+# Load the models
+model_rf = joblib.load(model_path_rf)
+model_xgb = joblib.load(model_path_xgb)
+vectorizer = joblib.load(vectorizer_path)
 
-@app.route('/')
-def index():
-    return render_template("index.html")
+# Load BERT tokenizer and model for deep learning
+tokenizer = BertTokenizer.from_pretrained('distilbert-base-uncased')
+bert_model = TFBertModel.from_pretrained('distilbert-base-uncased')
 
+# Preprocessing function
 def wordpre(text):
     text = text.lower()
     text = re.sub(r'\[.*?\]', '', text)
@@ -28,22 +40,52 @@ def wordpre(text):
     text = re.sub('[%s]' % re.escape(string.punctuation), '', text)
     text = re.sub('\n', '', text)
     text = re.sub(r'\w*\d\w*', '', text)
-    return text
+    
+    # Tokenize and Lemmatize
+    tokens = word_tokenize(text)
+    tokens = [token for token in tokens if token.isalpha()]
+    doc = nlp(" ".join(tokens))
+    lemmatized = [token.lemma_ for token in doc]
+    return " ".join(lemmatized)
 
+# Prediction route
 @app.route('/', methods=['POST'])
 def pre():
     if request.method == 'POST':
         txt = request.form['txt']
-        txt = wordpre(txt)
-        txt = pd.Series([txt])  # Ensure this is passed as a list or a Series
+        txt = wordpre(txt)  # Apply preprocessing
         
-        try:
-            result = Model.predict(txt)
-            result = result[0]  # Assuming it's a list/array, get the first prediction
-        except Exception as e:
-            result = f"Error: {str(e)}"
+        # Transform the text using the TF-IDF vectorizer
+        txt_tfidf = vectorizer.transform([txt])
         
-        return render_template("index.html", result=result)
+        # Prediction using Random Forest model
+        result_rf = model_rf.predict(txt_tfidf)[0]
+        # Prediction using XGBoost model
+        result_xgb = model_xgb.predict(txt_tfidf)[0]
+        
+        # For BERT, use the tokenizer to process the text
+        inputs = tokenizer([txt], return_tensors='tf', padding=True, truncation=True, max_length=128)
+        outputs = bert_model(inputs)
+        bert_embeddings = outputs.last_hidden_state[:, 0, :]  # CLS token embeddings
+        result_bert = bert_embeddings.numpy()
+
+        # Assuming a binary classification
+        if result_rf == 1:
+            result_rf = "Fake"
+        else:
+            result_rf = "Real"
+        
+        if result_xgb == 1:
+            result_xgb = "Fake"
+        else:
+            result_xgb = "Real"
+        
+        return render_template("index.html", result_rf=result_rf, result_xgb=result_xgb)
+
+# Main route
+@app.route('/')
+def index():
+    return render_template("index.html")
 
 if __name__ == "__main__":
     app.run(debug=True)
