@@ -47,10 +47,10 @@
       <div class="col-md-8">
         <div class="card text-center shadow-sm">
           <div class="card-body">
-            {% if result == 'Fake' %}
+            {% if result == 0 %}
               <h5 class="card-title text-danger">Fake News Detected</h5>
               <p class="card-text">⚠️ This article appears to be <strong>Fake</strong>.</p>
-            {% elif result == 'Real' %}
+            {% elif result == 1 %}
               <h5 class="card-title text-success">Genuine News Detected</h5>
               <p class="card-text">✅ This article appears to be <strong>Real</strong>.</p>
             {% else %}
