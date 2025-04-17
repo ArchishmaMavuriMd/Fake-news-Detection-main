@@ -28,7 +28,7 @@ This project demonstrates a **fake news detection pipeline** using a variety of 
 ## Project Structure
 
 ```bash
-fake_news_detection/
+fake_News_Detection-NLP/
 ├── App/
 │   ├── templates/
 │   │   └── index.html       # Front-end HTML template
