@@ -1,4 +1,3 @@
-Here’s an improved version of your `README.md`, beautified with better formatting and enhanced readability:
 
 ```markdown
 # Fake News Detection Project
@@ -133,5 +132,3 @@ Open your browser and navigate to `http://127.0.0.1:5000/` to use the Fake News 
 - **Models**: Pre-trained **BERT** model from **Hugging Face**
 
 ---
-
-This version of the README is formatted for better clarity, readability, and usability, with headers and sections clearly delineated.
